@@ -1,7 +1,7 @@
 import os
 import datetime
 import random
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -11,6 +11,7 @@ app = Flask(__name__)
 CORS(app)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'nebula.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -81,19 +82,28 @@ class Comment(db.Model):
             'text': self.text
         }
 
+
 # ---------------- TOKEN ----------------
 active_tokens = {}
 
 def get_current_user():
     token = request.headers.get('Authorization')
+
     if not token or token not in active_tokens:
         return None
+
     return User.query.get(active_tokens[token])
+
 
 # ---------------- SEED DATA ----------------
 def seed_data():
     if User.query.count() == 0:
-        names = ['alex_designs', 'sarah_travels', 'tech_guru']
+
+        names = [
+            'alex_designs',
+            'sarah_travels',
+            'tech_guru'
+        ]
 
         for name in names:
             user = User(
@@ -103,34 +113,43 @@ def seed_data():
                 password=generate_password_hash('password'),
                 avatar=f"https://picsum.photos/seed/{name}/200/200"
             )
+
             db.session.add(user)
 
         db.session.commit()
 
-        # demo postlar
+        # DEMO POSTS
         users = User.query.all()
+
         for i, user in enumerate(users):
             post = Post(
                 user_id=user.id,
                 image=f"https://picsum.photos/seed/post{i}/600/600",
                 caption=f"Hello Nebula #{i}"
             )
+
             db.session.add(post)
 
         db.session.commit()
 
-# ---------------- ROUTES ----------------
+
+# ---------------- FRONTEND ----------------
 @app.route('/')
 def home():
-    return "NebulaSocial backend ishlayapti 🚀"
+    return render_template("index.html")
 
 
+# ---------------- AUTH ----------------
 @app.route('/api/register', methods=['POST'])
 def register():
+
     data = request.json
 
     if User.query.filter_by(email=data['email']).first():
-        return jsonify({'error': 'Email exists'}), 400
+        return jsonify({
+            'success': False,
+            'message': 'Email already exists'
+        }), 400
 
     user = User(
         username=data['username'],
@@ -143,34 +162,55 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    return jsonify(user.to_dict())
+    return jsonify({
+        'success': True,
+        'user': user.to_dict()
+    })
 
 
 @app.route('/api/login', methods=['POST'])
 def login():
+
     data = request.json
+
     user = User.query.filter_by(email=data['email']).first()
 
     if user and check_password_hash(user.password, data['password']):
+
         token = str(user.id) + "_" + str(random.randint(1000, 9999))
+
         active_tokens[token] = user.id
 
-        return jsonify({'token': token, 'user': user.to_dict()})
+        return jsonify({
+            'success': True,
+            'token': token,
+            'user': user.to_dict()
+        })
 
-    return jsonify({'error': 'Invalid credentials'}), 401
+    return jsonify({
+        'success': False,
+        'message': 'Invalid credentials'
+    }), 401
 
 
+# ---------------- POSTS ----------------
 @app.route('/api/posts', methods=['GET'])
 def get_posts():
+
     posts = Post.query.order_by(Post.timestamp.desc()).all()
+
     return jsonify([p.to_dict() for p in posts])
 
 
 @app.route('/api/posts', methods=['POST'])
 def create_post():
+
     user = get_current_user()
+
     if not user:
-        return jsonify({'error': 'Unauthorized'}), 401
+        return jsonify({
+            'error': 'Unauthorized'
+        }), 401
 
     data = request.json
 
@@ -186,28 +226,56 @@ def create_post():
     return jsonify(post.to_dict())
 
 
+# ---------------- LIKE ----------------
 @app.route('/api/posts/<int:post_id>/like', methods=['POST'])
 def like(post_id):
-    user = get_current_user()
-    if not user:
-        return jsonify({'error': 'Unauthorized'}), 401
 
-    like = Like.query.filter_by(user_id=user.id, post_id=post_id).first()
+    user = get_current_user()
+
+    if not user:
+        return jsonify({
+            'error': 'Unauthorized'
+        }), 401
+
+    like = Like.query.filter_by(
+        user_id=user.id,
+        post_id=post_id
+    ).first()
+
+    liked = False
 
     if like:
         db.session.delete(like)
     else:
-        db.session.add(Like(user_id=user.id, post_id=post_id))
+        db.session.add(
+            Like(
+                user_id=user.id,
+                post_id=post_id
+            )
+        )
+        liked = True
 
     db.session.commit()
-    return jsonify({'success': True})
+
+    post = Post.query.get(post_id)
+
+    return jsonify({
+        'success': True,
+        'liked': liked,
+        'likes_count': len(post.likes)
+    })
 
 
+# ---------------- COMMENTS ----------------
 @app.route('/api/posts/<int:post_id>/comments', methods=['POST'])
 def comment(post_id):
+
     user = get_current_user()
+
     if not user:
-        return jsonify({'error': 'Unauthorized'}), 401
+        return jsonify({
+            'error': 'Unauthorized'
+        }), 401
 
     data = request.json
 
@@ -221,13 +289,45 @@ def comment(post_id):
     db.session.commit()
 
     return jsonify(c.to_dict())
-    
+
+
+# ---------------- USERS ----------------
+@app.route('/api/users', methods=['GET'])
+def get_users():
+
+    user = get_current_user()
+
+    if not user:
+        return jsonify([])
+
+    users = User.query.filter(User.id != user.id).all()
+
+    return jsonify([u.to_dict() for u in users])
+
+
+# ---------------- SEARCH ----------------
+@app.route('/api/search', methods=['GET'])
+def search():
+
+    query = request.args.get('q', '')
+
+    posts = Post.query.filter(
+        Post.caption.ilike(f'%{query}%')
+    ).all()
+
+    return jsonify([p.to_dict() for p in posts])
+
 
 # ---------------- RUN ----------------
 if __name__ == '__main__':
+
     with app.app_context():
         db.create_all()
         seed_data()
 
     print("Server http://127.0.0.1:5000 ishlayapti 🚀")
-    app.run(debug=True, port=5000)
+
+    app.run(
+        debug=True,
+        port=5000
+    )

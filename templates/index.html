@@ -20,7 +20,7 @@
             --accent-color: #0095f6;
             --bg-color: #000000;
             --surface-color: #121212;
-            --surface-glass: rgba(18, 18, 18, 0.65);
+            --surface-glass: rgba(18, 18, 18, 0.85);
             --border-color: rgba(255, 255, 255, 0.1);
             --text-main: #ffffff;
             --text-secondary: #a8a8a8;
@@ -239,6 +239,7 @@
             font-size: 1.1rem;
             transition: var(--transition);
             margin-bottom: 4px;
+            cursor: pointer;
         }
         
         .nav-link:hover,
@@ -290,6 +291,7 @@
             padding: 3px;
             background: var(--primary-gradient);
             margin-bottom: 4px;
+            position: relative;
         }
         
         .story-img {
@@ -315,6 +317,7 @@
             padding-bottom: 12px;
             margin-bottom: 12px;
             background: var(--surface-color);
+            position: relative;
         }
         
         .post-header {
@@ -346,6 +349,8 @@
             align-items: center;
             justify-content: center;
             min-height: 300px;
+            position: relative;
+            user-select: none;
         }
         
         .post-image {
@@ -353,6 +358,50 @@
             max-height: 600px;
             object-fit: cover;
             display: block;
+        }
+        /* Double Tap Heart Animation */
+        
+        .big-heart {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 6rem;
+            color: white;
+            opacity: 0;
+            pointer-events: none;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+        
+        .animate-heart {
+            animation: heartPop 0.8s ease-in-out;
+        }
+        
+        @keyframes heartPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            15% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            30% {
+                transform: translate(-50%, -50%) scale(0.95);
+                opacity: 1;
+            }
+            45% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            80% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
         }
         
         .post-actions {
@@ -400,6 +449,7 @@
         .caption .username {
             font-weight: 600;
             margin-right: 6px;
+            cursor: pointer;
         }
         
         .view-comments {
@@ -610,6 +660,133 @@
             border-radius: 8px;
             display: none;
         }
+        /* STORY VIEWER (New Feature) */
+        
+        #story-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 5000;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        #story-viewer.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .story-progress-bar {
+            height: 3px;
+            background: rgba(255, 255, 255, 0.3);
+            width: 100%;
+            position: absolute;
+            top: 10px;
+            left: 0;
+            z-index: 10;
+        }
+        
+        .story-progress-fill {
+            height: 100%;
+            background: white;
+            width: 0%;
+        }
+        
+        .story-nav {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            z-index: 20;
+            color: white;
+        }
+        
+        .story-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-size: cover;
+            background-position: center;
+        }
+        /* PROFILE PAGE STYLES */
+        
+        .profile-header {
+            padding: 30px 20px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+        
+        .profile-stats {
+            display: flex;
+            gap: 40px;
+            margin: 20px 0;
+        }
+        
+        .stat-num {
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: block;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+        }
+        
+        .profile-grid img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+        }
+        /* SEARCH STYLES */
+        
+        .search-container {
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: none;
+            background: #262626;
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .search-results {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-top: 20px;
+        }
         /* Toast Notification */
         
         #toast-container {
@@ -617,7 +794,7 @@
             bottom: 80px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 5000;
+            z-index: 6000;
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -683,6 +860,13 @@
             .stories-rail {
                 background: var(--bg-color);
             }
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .profile-stats {
+                justify-content: center;
+            }
         }
     </style>
 </head>
@@ -691,7 +875,6 @@
 
     <!-- AUTH SCREEN -->
     <div id="auth-container">
-        <!-- Login Form -->
         <div id="login-form" class="auth-box">
             <h1 class="logo-text">Nebula</h1>
             <form onsubmit="Auth.login(event)">
@@ -709,27 +892,13 @@
                 Don't have an account? <a href="#" onclick="UI.toggleAuth('register')" style="color: var(--accent-color)">Sign up</a>
             </div>
         </div>
-
-        <!-- Register Form -->
         <div id="register-form" class="auth-box hidden">
             <h1 class="logo-text">Nebula</h1>
             <form onsubmit="Auth.register(event)">
-                <div class="input-group">
-                    <label>Email</label>
-                    <input type="email" id="reg-email" class="auth-input" placeholder="Email" required>
-                </div>
-                <div class="input-group">
-                    <label>Full Name</label>
-                    <input type="text" id="reg-name" class="auth-input" placeholder="Full Name" required>
-                </div>
-                <div class="input-group">
-                    <label>Username</label>
-                    <input type="text" id="reg-username" class="auth-input" placeholder="Username" required>
-                </div>
-                <div class="input-group">
-                    <label>Password</label>
-                    <input type="password" id="reg-password" class="auth-input" placeholder="Password" required>
-                </div>
+                <div class="input-group"><label>Email</label><input type="email" id="reg-email" class="auth-input" placeholder="Email" required></div>
+                <div class="input-group"><label>Full Name</label><input type="text" id="reg-name" class="auth-input" placeholder="Full Name" required></div>
+                <div class="input-group"><label>Username</label><input type="text" id="reg-username" class="auth-input" placeholder="Username" required></div>
+                <div class="input-group"><label>Password</label><input type="password" id="reg-password" class="auth-input" placeholder="Password" required></div>
                 <button type="submit" class="btn btn-primary w-full">Sign Up</button>
             </form>
             <div style="margin-top: 20px; font-size: 0.9rem;">
@@ -740,17 +909,12 @@
 
     <!-- MAIN APP -->
     <div id="app-layout" class="hidden">
-
-        <!-- SIDEBAR (Desktop) -->
         <aside class="sidebar">
             <h1 class="logo-text" style="font-size: 1.8rem; margin-bottom: 30px;">Nebula</h1>
             <nav>
                 <a href="#" class="nav-link active" onclick="Router.navigate('home')"><i class="fas fa-home"></i> <span>Home</span></a>
                 <a href="#" class="nav-link" onclick="Router.navigate('explore')"><i class="fas fa-search"></i> <span>Explore</span></a>
                 <a href="#" class="nav-link" onclick="Router.navigate('reels')"><i class="fas fa-film"></i> <span>Reels</span></a>
-                <a href="#" class="nav-link" onclick="Router.navigate('messages')"><i class="fas fa-paper-plane"></i> <span>Messages</span></a>
-                <a href="#" class="nav-link" onclick="Router.navigate('notifications')"><i class="fas fa-heart"></i> <span>Notifications</span></a>
-                <a href="#" class="nav-link" onclick="Router.navigate('create')"><i class="fas fa-plus-square"></i> <span>Create</span></a>
                 <a href="#" class="nav-link" onclick="Router.navigate('profile')"><i class="fas fa-user-circle"></i> <span>Profile</span></a>
             </nav>
             <div style="margin-top: auto;">
@@ -759,12 +923,10 @@
             </div>
         </aside>
 
-        <!-- MAIN FEED AREA -->
         <main class="feed-container" id="main-content">
             <!-- Content injected via JS -->
         </main>
 
-        <!-- RIGHT PANEL (Suggestions) -->
         <aside class="right-panel">
             <div class="user-profile-summary">
                 <div class="user-info-summary">
@@ -776,19 +938,11 @@
                 </div>
                 <div class="switch-btn" onclick="Auth.logout()">Switch</div>
             </div>
-
             <div class="suggestions-header">
                 <span>Suggestions For You</span>
                 <span style="color: var(--text-main); font-weight: 400; cursor: pointer;">See All</span>
             </div>
-
-            <div id="suggestions-list">
-                <!-- Injected via JS -->
-            </div>
-
-            <footer style="margin-top: 30px; color: #555; font-size: 0.75rem; line-height: 1.5;">
-                About • Help • Press • API • Jobs • Privacy • Terms <br> © 2023 NEBULA SOCIAL INC.
-            </footer>
+            <div id="suggestions-list"></div>
         </aside>
     </div>
 
@@ -796,7 +950,7 @@
     <div class="mobile-nav hidden" id="mobile-nav">
         <a href="#" onclick="Router.navigate('home')" class="btn-icon"><i class="fas fa-home"></i></a>
         <a href="#" onclick="Router.navigate('explore')" class="btn-icon"><i class="fas fa-search"></i></a>
-        <a href="#" onclick="Router.navigate('create')" class="btn-icon"><i class="fas fa-plus-square"></i></a>
+        <a href="#" onclick="UI.openCreate()" class="btn-icon"><i class="fas fa-plus-square"></i></a>
         <a href="#" onclick="Router.navigate('reels')" class="btn-icon"><i class="fas fa-film"></i></a>
         <a href="#" onclick="Router.navigate('profile')" class="btn-icon"><i class="far fa-user-circle"></i></a>
     </div>
@@ -821,218 +975,149 @@
         </div>
     </div>
 
+    <!-- STORY VIEWER MODAL -->
+    <div id="story-viewer" onclick="Stories.close()">
+        <div class="story-nav">
+            <i class="fas fa-chevron-left"></i>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img id="story-user-img" src="" class="user-avatar-small">
+                <span id="story-username" style="font-weight: 600; font-size: 0.9rem;">username</span>
+                <span style="opacity: 0.7; font-size: 0.8rem;">5h</span>
+            </div>
+            <i class="fas fa-ellipsis-h"></i>
+        </div>
+        <div class="story-progress-bar">
+            <div class="story-progress-fill" id="story-fill"></div>
+        </div>
+        <div class="story-content" id="story-content-bg"></div>
+    </div>
+
     <!-- TOAST CONTAINER -->
     <div id="toast-container"></div>
 
     <!-- 
      * =========================================
-     * JAVASCRIPT LOGIC
+     * JAVASCRIPT LOGIC (BACKEND UCHUN)
      * =========================================
      -->
     <script>
-        /**
-         * MOCK BACKEND SIMULATION
-         * Simulates Python/Flask API + SQLite Database
-         */
-        const MockDB = {
-            users: [],
-            posts: [],
-            comments: [],
-            likes: [],
+        // --- MOCKDB O'CHIRILDI, ENDI API BEKENDGA MUROJAAT QILADI ---
 
-            init() {
-                // Load from localStorage or seed
-                if (localStorage.getItem('nebula_users')) {
-                    this.users = JSON.parse(localStorage.getItem('nebula_users'));
-                    this.posts = JSON.parse(localStorage.getItem('nebula_posts') || '[]');
-                    this.comments = JSON.parse(localStorage.getItem('nebula_comments') || '[]');
-                    this.likes = JSON.parse(localStorage.getItem('nebula_likes') || '[]');
-                } else {
-                    this.seed();
+        const API_BASE_URL = 'http://127.0.0.1:5000/api';
+        let AUTH_TOKEN = localStorage.getItem('nebula_token') || null;
+
+        const API = {
+            // Yordamchi funksiya: So'rov yuborish
+            async request(endpoint, method = 'GET', body = null) {
+                const headers = {
+                    'Content-Type': 'application/json'
+                };
+                if (AUTH_TOKEN) {
+                    headers['Authorization'] = AUTH_TOKEN;
+                }
+
+                const config = {
+                    method,
+                    headers
+                };
+                if (body) config.body = JSON.stringify(body);
+
+                try {
+                    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+                    if (response.status === 401) {
+                        Auth.logout(); // Token yaroqsiz bo'lsa chiqish
+                        return null;
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error("API Error:", error);
+                    UI.toast('Server bilan aloqa yo\'q', 'error');
+                    return null;
                 }
             },
 
-            save() {
-                localStorage.setItem('nebula_users', JSON.stringify(this.users));
-                localStorage.setItem('nebula_posts', JSON.stringify(this.posts));
-                localStorage.setItem('nebula_comments', JSON.stringify(this.comments));
-                localStorage.setItem('nebula_likes', JSON.stringify(this.likes));
-            },
-
-            seed() {
-                // Create fake users
-                const names = ['alex_designs', 'sarah_travels', 'tech_guru', 'foodie_joe', 'art_soul'];
-                this.users = names.map((name, i) => ({
-                    id: `u${i}`,
-                    username: name,
-                    fullname: name.replace('_', ' ').toUpperCase(),
-                    email: `${name}@test.com`,
-                    password: 'password',
-                    avatar: `https://picsum.photos/seed/${name}/200/200`,
-                    followers: [],
-                    following: []
-                }));
-
-                // Create fake posts
-                this.posts = [{
-                    id: 'p1',
-                    userId: 'u0',
-                    image: 'https://picsum.photos/seed/post1/600/600',
-                    caption: 'Modern architecture vibes 🏛️ #design #minimal',
-                    likes: 124,
-                    timestamp: Date.now() - 10000000
-                }, {
-                    id: 'p2',
-                    userId: 'u1',
-                    image: 'https://picsum.photos/seed/post2/600/800',
-                    caption: 'Lost in the mountains 🏔️',
-                    likes: 89,
-                    timestamp: Date.now() - 5000000
-                }, {
-                    id: 'p3',
-                    userId: 'u4',
-                    image: 'https://picsum.photos/seed/post3/600/600',
-                    caption: 'Digital art process 🎨',
-                    likes: 342,
-                    timestamp: Date.now() - 200000
-                }, ];
-
-                this.save();
-            }
-        };
-
-        const API = {
-            delay: (ms) => new Promise(resolve => setTimeout(resolve, ms)),
-
             async login(email, password) {
-                await this.delay(600);
-                const user = MockDB.users.find(u => u.email === email && u.password === password);
-                if (user) return {
-                    success: true,
-                    token: 'fake-jwt-' + user.id,
-                    user
-                };
-                return {
-                    success: false,
-                    message: 'Invalid credentials'
-                };
+                const res = await this.request('/login', 'POST', {
+                    email,
+                    password
+                });
+                if (res && res.success) {
+                    AUTH_TOKEN = res.token;
+                    localStorage.setItem('nebula_token', res.token);
+                    return res;
+                }
+                return res;
             },
 
             async register(userData) {
-                await this.delay(800);
-                if (MockDB.users.find(u => u.email === userData.email)) {
-                    return {
-                        success: false,
-                        message: 'Email already exists'
-                    };
+                const res = await this.request('/register', 'POST', userData);
+                return res;
+            },
+
+            async getPosts(userIdFilter = null) {
+                // Backendda hamma postlarni olyapmiz, filtrlash frontendda ham bo'lishi mumkin
+                const res = await this.request('/posts');
+                if (!res) return [];
+                let posts = res;
+                if (userIdFilter) {
+                    posts = posts.filter(p => p.user.id == userIdFilter);
                 }
-                const newUser = {
-                    id: 'u' + Date.now(),
-                    ...userData,
-                    avatar: `https://picsum.photos/seed/${userData.username}/200/200`,
-                    followers: [],
-                    following: []
-                };
-                MockDB.users.push(newUser);
-                MockDB.save();
-                return {
-                    success: true,
-                    user: newUser
-                };
+                return posts;
             },
 
-            async getPosts() {
-                await this.delay(300);
-                // Join posts with user data
-                return MockDB.posts.map(p => {
-                    const user = MockDB.users.find(u => u.id === p.userId);
-                    return {...p,
-                        user
-                    };
-                }).sort((a, b) => b.timestamp - a.timestamp);
-            },
-
-            async createPost(imageBase64, caption, userId) {
-                await this.delay(500);
-                const newPost = {
-                    id: 'p' + Date.now(),
-                    userId,
+            async createPost(imageBase64, caption) {
+                return await this.request('/posts', 'POST', {
                     image: imageBase64,
-                    caption,
-                    likes: 0,
-                    timestamp: Date.now()
-                };
-                MockDB.posts.unshift(newPost); // Add to top
-                MockDB.save();
-                return newPost;
+                    caption
+                });
             },
 
-            async toggleLike(postId, userId) {
-                const existingIdx = MockDB.likes.findIndex(l => l.postId === postId && l.userId === userId);
-                let liked = false;
-                if (existingIdx > -1) {
-                    MockDB.likes.splice(existingIdx, 1);
-                    liked = false;
-                } else {
-                    MockDB.likes.push({
-                        postId,
-                        userId,
-                        timestamp: Date.now()
-                    });
-                    liked = true;
-                }
-                MockDB.save();
-                return liked;
+            async toggleLike(postId) {
+                const res = await this.request(`/posts/${postId}/like`, 'POST');
+                if (res) return res.liked;
+                return false;
             },
 
-            async addComment(postId, userId, text) {
-                const comment = {
-                    id: 'c' + Date.now(),
-                    postId,
-                    userId,
-                    text,
-                    timestamp: Date.now()
-                };
-                MockDB.comments.push(comment);
-                MockDB.save();
-                return comment;
+            async addComment(postId, text) {
+                // Kommentariyalar uchun backendda alohida GET endpointi yo'q, shuning uchun
+                // biz shunchaki yuboramiz va UI yangilanadi.
+                return await this.request(`/posts/${postId}/comments`, 'POST', {
+                    text
+                });
             },
 
-            async getUsers(currentUserId) {
-                return MockDB.users.filter(u => u.id !== currentUserId);
+            async searchPosts(query) {
+                return await this.request(`/search?q=${encodeURIComponent(query)}`);
+            },
+
+            async getUsers() {
+                return await this.request('/users');
             }
         };
 
-        /**
-         * STATE MANAGEMENT
-         */
         const State = {
             user: JSON.parse(localStorage.getItem('nebula_current_user')) || null,
             theme: localStorage.getItem('nebula_theme') || 'dark'
         };
 
-        /**
-         * CONTROLLERS
-         */
         const Auth = {
             async login(e) {
                 e.preventDefault();
                 const email = document.getElementById('login-email').value;
                 const password = document.getElementById('login-password').value;
-
                 UI.showLoading();
+
                 const res = await API.login(email, password);
                 UI.hideLoading();
 
-                if (res.success) {
+                if (res && res.success) {
                     State.user = res.user;
                     localStorage.setItem('nebula_current_user', JSON.stringify(res.user));
                     UI.initApp();
                 } else {
-                    UI.toast(res.message, 'error');
+                    UI.toast(res ? res.message : 'Xatolik yuz berdi', 'error');
                 }
             },
-
             async register(e) {
                 e.preventDefault();
                 const userData = {
@@ -1041,22 +1126,22 @@
                     username: document.getElementById('reg-username').value,
                     password: document.getElementById('reg-password').value
                 };
-
                 UI.showLoading();
                 const res = await API.register(userData);
                 UI.hideLoading();
-
-                if (res.success) {
-                    UI.toast('Account created! Please log in.', 'success');
+                if (res && res.success) {
+                    UI.toast('Ro\'yxatdan o\'tdingiz! Kirish.', 'success');
                     UI.toggleAuth('login');
                 } else {
-                    UI.toast(res.message, 'error');
+                    UI.toast(res ? res.message : 'Xatolik', 'error');
                 }
             },
-
             logout() {
                 State.user = null;
+                AUTH_TOKEN = null;
                 localStorage.removeItem('nebula_current_user');
+                localStorage.removeItem('nebula_token');
+                // Backend tokenni o'chirishni talab qilmaymiz (oddiy demo uchun)
                 location.reload();
             }
         };
@@ -1064,89 +1149,91 @@
         const Posts = {
             imageBase64: null,
 
-            async loadFeed() {
+            async loadFeed(userId = null) {
                 const container = document.getElementById('main-content');
-                // Show Skeleton or Spinner here in real app
-                const posts = await API.getPosts();
+                const posts = await API.getPosts(userId);
 
-                let html = `
-                    <div class="stories-rail" id="stories-rail">
-                        <!-- Stories injected here -->
-                    </div>
-                `;
+                let html = '';
+                if (!userId) {
+                    html += `<div class="stories-rail" id="stories-rail"></div>`;
+                }
 
-                posts.forEach(post => {
-                    const isLiked = MockDB.likes.some(l => l.postId === post.id && l.userId === State.user.id);
-                    const likeClass = isLiked ? 'liked fas' : 'far';
+                if (posts.length === 0) {
+                    html += `<div style="padding: 40px; text-align: center; color: var(--text-secondary)">Postlar yo'q.</div>`;
+                } else {
+                    posts.forEach(post => {
+                        const isLiked = post.is_liked; // Backenddan keldi
+                        const likeClass = isLiked ? 'liked fas' : 'far';
 
-                    html += `
-                        <article class="post-card">
-                            <div class="post-header">
-                                <div class="post-user" onclick="Router.navigate('profile')">
-                                    <img src="${post.user.avatar}" class="user-avatar-small">
-                                    <span>${post.user.username}</span>
+                        html += `
+                            <article class="post-card">
+                                <div class="post-header">
+                                    <div class="post-user" onclick="Router.navigate('profile', '${post.user.id}')">
+                                        <img src="${post.user.avatar}" class="user-avatar-small">
+                                        <span>${post.user.username}</span>
+                                    </div>
+                                    <i class="fas fa-ellipsis-h"></i>
                                 </div>
-                                <i class="fas fa-ellipsis-h" style="cursor: pointer;"></i>
-                            </div>
-                            <div class="post-image-container" ondblclick="Posts.handleLike('${post.id}', this)">
-                                <img src="${post.image}" class="post-image" loading="lazy">
-                            </div>
-                            <div class="post-actions">
-                                <div class="action-left">
-                                    <i class="${likeClass} fa-heart like-btn" id="like-btn-${post.id}" onclick="Posts.handleLike('${post.id}')"></i>
-                                    <i class="far fa-comment" onclick="document.getElementById('comment-input-${post.id}').focus()"></i>
-                                    <i class="far fa-paper-plane" onclick="UI.toast('Shared to chat', 'success')"></i>
+                                <div class="post-image-container" ondblclick="Posts.handleLike('${post.id}', this)">
+                                    <img src="${post.image}" class="post-image" loading="lazy">
+                                    <i class="fas fa-heart big-heart" id="big-heart-${post.id}"></i>
                                 </div>
-                                <i class="far fa-bookmark" onclick="UI.toast('Post saved', 'success')"></i>
-                            </div>
-                            <div class="post-content">
-                                <div class="likes-count" id="likes-count-${post.id}">${post.likes} likes</div>
-                                <div class="caption">
-                                    <span class="username">${post.user.username}</span> ${post.caption}
+                                <div class="post-actions">
+                                    <div class="action-left">
+                                        <i class="${likeClass} fa-heart like-btn" id="like-btn-${post.id}" onclick="Posts.handleLike('${post.id}')"></i>
+                                        <i class="far fa-comment" onclick="document.getElementById('comment-input-${post.id}').focus()"></i>
+                                        <i class="far fa-paper-plane" onclick="UI.toast('Yuborildi', 'success')"></i>
+                                    </div>
+                                    <i class="far fa-bookmark" onclick="UI.toast('Saqlandi', 'success')"></i>
                                 </div>
-                                <div class="comments-list" id="comments-${post.id}">
-                                    <!-- Comments Loaded on Demand or Rendered -->
+                                <div class="post-content">
+                                    <div class="likes-count" id="likes-count-${post.id}">${post.likes} likes</div>
+                                    <div class="caption">
+                                        <span class="username" onclick="Router.navigate('profile', '${post.user.id}')">${post.user.username}</span> ${post.caption}
+                                    </div>
+                                    <div class="comments-list" id="comments-${post.id}"></div>
+                                    <div class="timestamp">${UI.timeSince(post.timestamp)}</div>
                                 </div>
-                                <div class="timestamp">${UI.timeSince(post.timestamp)}</div>
-                            </div>
-                            <div class="add-comment">
-                                <i class="far fa-smile" style="margin-right: 12px; font-size: 1.5rem; padding-top: 2px;"></i>
-                                <textarea id="comment-input-${post.id}" class="comment-input" placeholder="Add a comment..." oninput="UI.autoResize(this)"></textarea>
-                                <button class="post-btn" id="post-btn-${post.id}" onclick="Posts.postComment('${post.id}')">Post</button>
-                            </div>
-                        </article>
-                    `;
-                });
-
+                                <div class="add-comment">
+                                    <i class="far fa-smile" style="margin-right: 12px; font-size: 1.5rem; padding-top: 2px;"></i>
+                                    <textarea id="comment-input-${post.id}" class="comment-input" placeholder="Izoh yozish..." oninput="UI.autoResize(this)"></textarea>
+                                    <button class="post-btn" id="post-btn-${post.id}" onclick="Posts.postComment('${post.id}')">Post</button>
+                                </div>
+                            </article>
+                        `;
+                    });
+                }
                 container.innerHTML = html;
-                this.loadStories();
+                if (!userId) this.loadStories();
             },
 
             loadStories() {
+                // Stories uchun hamma userni olish
                 const rail = document.getElementById('stories-rail');
                 if (!rail) return;
 
-                // Add "Your Story"
-                let html = `
-                    <div class="story-item">
-                        <div class="story-ring" style="border: 2px solid #ddd; background: none;">
-                            <img src="${State.user.avatar}" class="story-img">
-                        </div>
-                        <span class="story-name">Your Story</span>
-                    </div>
-                `;
-
-                MockDB.users.forEach(u => {
-                    html += `
-                        <div class="story-item" onclick="UI.toast('Viewing story of ${u.username}')">
-                            <div class="story-ring">
-                                <img src="${u.avatar}" class="story-img">
+                API.getUsers().then(users => {
+                    if (!users) return;
+                    let html = `
+                        <div class="story-item" onclick="UI.toast('Sizning hikoyangiz')">
+                            <div class="story-ring" style="border: 2px solid #ddd; background: none;">
+                                <img src="${State.user.avatar}" class="story-img">
                             </div>
-                            <span class="story-name">${u.username}</span>
+                            <span class="story-name">Siz</span>
                         </div>
                     `;
+                    users.forEach(u => {
+                        html += `
+                            <div class="story-item" onclick="Stories.open('${u.id}', '${u.username}', '${u.avatar}')">
+                                <div class="story-ring">
+                                    <img src="${u.avatar}" class="story-img">
+                                </div>
+                                <span class="story-name">${u.username}</span>
+                            </div>
+                        `;
+                    });
+                    rail.innerHTML = html;
                 });
-                rail.innerHTML = html;
             },
 
             previewImage(input) {
@@ -1165,46 +1252,53 @@
 
             async submit() {
                 const caption = document.getElementById('post-caption').value;
-                if (!this.imageBase64) return UI.toast('Please select an image', 'error');
-
+                if (!this.imageBase64) return UI.toast('Rasm tanlang', 'error');
                 UI.showLoading();
-                await API.createPost(this.imageBase64, caption, State.user.id);
+                await API.createPost(this.imageBase64, caption);
                 UI.hideLoading();
                 UI.closeModal('create-modal');
-                UI.toast('Post shared successfully', 'success');
-
-                // Reset form
+                UI.toast('Post muvaffaqiyatli joylandi', 'success');
+                // Tozalash
                 this.imageBase64 = null;
                 document.getElementById('post-file').value = '';
                 document.getElementById('post-caption').value = '';
                 document.getElementById('post-preview').style.display = 'none';
                 document.getElementById('upload-trigger').style.display = 'block';
 
-                // Reload feed
-                if (Router.currentPage === 'home') this.loadFeed();
+                Router.navigate(Router.currentPage, Router.currentUserId);
             },
 
-            async handleLike(postId, imageContainer) {
-                const isLiked = await API.toggleLike(postId, State.user.id);
+            async handleLike(postId, container) {
+                // Optimistik UI yangilash (tezlik uchun)
                 const btn = document.getElementById(`like-btn-${postId}`);
                 const countLabel = document.getElementById(`likes-count-${postId}`);
+                let currentCount = parseInt(countLabel.innerText);
+                const isLikedUI = btn.classList.contains('liked');
 
-                // Simple animation for double tap
-                if (imageContainer) {
-                    // create heart overlay logic omitted for brevity
+                if (container) {
+                    const bigHeart = document.getElementById(`big-heart-${postId}`);
+                    bigHeart.classList.remove('animate-heart');
+                    void bigHeart.offsetWidth;
+                    bigHeart.classList.add('animate-heart');
                 }
 
-                let count = parseInt(countLabel.innerText);
-                if (isLiked) {
-                    btn.classList.remove('far');
-                    btn.classList.add('liked', 'fas');
-                    count++;
-                } else {
-                    btn.classList.remove('liked', 'fas');
-                    btn.classList.add('far');
-                    count--;
+                // API ga so'rov yuborish
+                const serverLiked = await API.toggleLike(postId);
+
+                // Server javobiga qarab UI ni to'g'irlash
+                if (serverLiked !== null) {
+                    if (serverLiked) {
+                        btn.classList.remove('far');
+                        btn.classList.add('liked', 'fas');
+                        if (!isLikedUI) currentCount++;
+                    } else {
+                        btn.classList.remove('liked', 'fas');
+                        btn.classList.add('far');
+                        if (isLikedUI) currentCount--;
+                    }
+                    // Serverdan aniq sonni olish yaxshi, lekin demo uchun hisoblab chiqamiz
+                    countLabel.innerText = `${currentCount} likes`;
                 }
-                countLabel.innerText = `${count} likes`;
             },
 
             async postComment(postId) {
@@ -1212,12 +1306,13 @@
                 const text = input.value.trim();
                 if (!text) return;
 
-                await API.addComment(postId, State.user.id, text);
+                await API.addComment(postId, text);
+
                 input.value = '';
                 input.style.height = '20px';
                 document.getElementById(`post-btn-${postId}`).classList.remove('active');
 
-                // Add to UI immediately (optimistic UI)
+                // UIga qo'shish (Chunki backenddan kommentariyalar ro'yxatini qaytarish murakkablashadi, shunchaki qo'shib qo'yamiz)
                 const list = document.getElementById(`comments-${postId}`);
                 const div = document.createElement('div');
                 div.className = 'comment-item';
@@ -1226,56 +1321,79 @@
             }
         };
 
-        /**
-         * UI HELPERS & ROUTER
-         */
+        const Stories = {
+            timer: null,
+            // User obyektini olish o'rniga parametr qabul qilamiz
+            open(userId, username, avatar) {
+                const modal = document.getElementById('story-viewer');
+                const fill = document.getElementById('story-fill');
+                const content = document.getElementById('story-content-bg');
+
+                document.getElementById('story-username').innerText = username;
+                document.getElementById('story-user-img').src = avatar;
+
+                // Tasodifiy rasm
+                const storyImg = `https://picsum.photos/seed/${userId}story/800/1200`;
+                content.style.backgroundImage = `url(${storyImg})`;
+
+                modal.classList.add('open');
+
+                fill.style.transition = 'none';
+                fill.style.width = '0%';
+                setTimeout(() => {
+                    fill.style.transition = 'width 5s linear';
+                    fill.style.width = '100%';
+                }, 50);
+
+                this.timer = setTimeout(() => {
+                    this.close();
+                }, 5050);
+            },
+            close() {
+                document.getElementById('story-viewer').classList.remove('open');
+                if (this.timer) clearTimeout(this.timer);
+            }
+        };
+
         const UI = {
             initApp() {
                 document.getElementById('auth-container').classList.add('hidden');
                 document.getElementById('app-layout').classList.remove('hidden');
                 document.getElementById('mobile-nav').classList.remove('hidden');
-
-                // Update User Profile in Sidebar
                 document.getElementById('current-user-avatar').src = State.user.avatar;
                 document.getElementById('current-user-name').innerText = State.user.username;
                 document.getElementById('current-user-fullname').innerText = State.user.fullname;
 
-                // Load Suggestions
-                API.getUsers(State.user.id).then(users => {
+                API.getUsers().then(users => {
+                    if (!users) return;
                     const list = document.getElementById('suggestions-list');
                     list.innerHTML = users.slice(0, 5).map(u => `
                         <div class="suggestion-item">
-                            <div class="user-info-summary">
+                            <div class="user-info-summary" style="cursor:pointer" onclick="Router.navigate('profile', '${u.id}')">
                                 <img src="${u.avatar}" class="user-avatar-small">
                                 <div class="username-block">
                                     <div style="font-size: 0.9rem; font-weight: 600;">${u.username}</div>
-                                    <div style="font-size: 0.75rem;">New to Nebula</div>
                                 </div>
                             </div>
-                            <div class="follow-btn" onclick="UI.toast('Followed ${u.username}', 'success')">Follow</div>
+                            <div class="follow-btn" onclick="UI.toast('Obuna bo\'ldi', 'success')">Follow</div>
                         </div>
                     `).join('');
                 });
-
                 this.applyTheme();
                 Router.navigate('home');
             },
-
             toggleAuth(screen) {
                 document.getElementById('login-form').classList.toggle('hidden', screen !== 'login');
                 document.getElementById('register-form').classList.toggle('hidden', screen !== 'register');
             },
-
             toggleTheme() {
                 State.theme = State.theme === 'dark' ? 'light' : 'dark';
                 localStorage.setItem('nebula_theme', State.theme);
                 this.applyTheme();
             },
-
             applyTheme() {
                 document.documentElement.setAttribute('data-theme', State.theme);
             },
-
             toast(msg, type = 'info') {
                 const container = document.getElementById('toast-container');
                 const div = document.createElement('div');
@@ -1285,139 +1403,160 @@
                 container.appendChild(div);
                 setTimeout(() => div.remove(), 3000);
             },
-
             showLoading() {
-                // Simple loading logic could go here
                 document.body.style.cursor = 'wait';
             },
             hideLoading() {
                 document.body.style.cursor = 'default';
             },
-
             openModal(id) {
                 document.getElementById(id).classList.add('open');
             },
             closeModal(id) {
                 document.getElementById(id).classList.remove('open');
             },
-
+            openCreate() {
+                this.openModal('create-modal');
+            },
             autoResize(textarea) {
                 textarea.style.height = 'auto';
                 textarea.style.height = textarea.scrollHeight + 'px';
                 const btn = textarea.nextElementSibling;
-                if (textarea.value.trim().length > 0) btn.classList.add('active');
-                else btn.classList.remove('active');
+                btn.classList.toggle('active', textarea.value.trim().length > 0);
             },
-
             timeSince(date) {
+                // date backenddan millisekundlarda keladi
                 const seconds = Math.floor((new Date() - date) / 1000);
                 let interval = seconds / 31536000;
-                if (interval > 1) return Math.floor(interval) + " YEARS AGO";
+                if (interval > 1) return Math.floor(interval) + " YIL OLDIN";
                 interval = seconds / 2592000;
-                if (interval > 1) return Math.floor(interval) + " MONTHS AGO";
+                if (interval > 1) return Math.floor(interval) + " OY OLDIN";
                 interval = seconds / 86400;
-                if (interval > 1) return Math.floor(interval) + " DAYS AGO";
+                if (interval > 1) return Math.floor(interval) + " KUN OLDIN";
                 interval = seconds / 3600;
-                if (interval > 1) return Math.floor(interval) + " HOURS AGO";
+                if (interval > 1) return Math.floor(interval) + " SOAT OLDIN";
                 interval = seconds / 60;
-                if (interval > 1) return Math.floor(interval) + " MINUTES AGO";
-                return "JUST NOW";
+                if (interval > 1) return Math.floor(interval) + " DAQIQA OLDIN";
+                return "HOZIRGINA";
             }
         };
 
         const Router = {
             currentPage: 'home',
+            currentUserId: null,
 
-            navigate(page) {
+            navigate(page, userId = null) {
                 this.currentPage = page;
+                this.currentUserId = userId;
                 const main = document.getElementById('main-content');
-
-                // Update Active Link
-                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-                // Very simple active state logic for demo
 
                 if (page === 'home') {
                     Posts.loadFeed();
                 } else if (page === 'explore') {
-                    main.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--text-secondary);">
-                        <h2>Explore</h2>
-                        <p>Search functionality and grid view would go here.</p>
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 20px;">
-                             <img src="https://picsum.photos/seed/e1/200/200" style="width:100%">
-                             <img src="https://picsum.photos/seed/e2/200/200" style="width:100%">
-                             <img src="https://picsum.photos/seed/e3/200/200" style="width:100%">
-                             <img src="https://picsum.photos/seed/e4/200/200" style="width:100%">
-                             <img src="https://picsum.photos/seed/e5/200/200" style="width:100%">
-                             <img src="https://picsum.photos/seed/e6/200/200" style="width:100%">
-                        </div>
-                    </div>`;
-                } else if (page === 'create') {
-                    UI.openModal('create-modal');
-                    // Revert to home visually if cancelled, but keep logic simple
-                } else if (page === 'profile') {
                     main.innerHTML = `
-                        <div style="padding: 20px; border-bottom: 1px solid var(--border-color);">
-                            <div class="flex items-center gap-4">
-                                <img src="${State.user.avatar}" class="avatar-lg" style="width: 80px; height: 80px;">
-                                <div>
-                                    <h2 style="font-size: 1.5rem;">${State.user.username}</h2>
-                                    <div class="flex gap-4" style="margin-top: 10px;">
-                                        <div><strong>0</strong> posts</div>
-                                        <div><strong>142</strong> followers</div>
-                                        <div><strong>45</strong> following</div>
-                                    </div>
-                                </div>
+                        <div class="search-container">
+                            <input type="text" id="search-input" class="search-input" placeholder="Qidirish (masalan: 'nature', 'tech')..." onkeyup="Router.handleSearch(this.value)">
+                            <div class="search-results" id="search-results">
+                                <img src="https://picsum.photos/seed/e1/300/300" onclick="UI.toast('Post')">
+                                <img src="https://picsum.photos/seed/e2/300/300" onclick="UI.toast('Post')">
+                                <img src="https://picsum.photos/seed/e3/300/300" onclick="UI.toast('Post')">
                             </div>
-                            <div style="margin-top: 20px;">
-                                <h3>${State.user.fullname}</h3>
-                                <p style="color: var(--text-secondary)">Digital Creator. Welcome to my profile.</p>
-                            </div>
-                            <button class="btn btn-primary" style="margin-top: 20px;">Edit Profile</button>
-                        </div>
-                        <div class="flex" style="border-bottom: 1px solid var(--border-color);">
-                            <div style="padding: 15px; border-top: 1px solid var(--text-main); font-weight: 600; cursor: pointer;"><i class="fas fa-th"></i> POSTS</div>
-                            <div style="padding: 15px; color: var(--text-secondary); cursor: pointer;"><i class="fas fa-film"></i> REELS</div>
-                            <div style="padding: 15px; color: var(--text-secondary); cursor: pointer;"><i class="fas fa-tag"></i> TAGGED</div>
-                        </div>
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;">
-                            <!-- User posts mockup -->
-                             <img src="https://picsum.photos/seed/p1/300/300" style="width:100%; aspect-ratio:1/1; object-fit:cover;">
-                             <img src="https://picsum.photos/seed/p2/300/300" style="width:100%; aspect-ratio:1/1; object-fit:cover;">
                         </div>
                     `;
+                } else if (page === 'profile') {
+                    // Profile sahifasi uchun backenddan user ma'lumotlarini olishimiz kerak
+                    // Hozircha State.user dan yoki API.getUser dan foydalanamiz
+                    // Bu yerda soddalik uchun, agar user ID berilgan bo'lsa API chaqirish kerak bo'ladi,
+                    // lekin bizda hamma userni listni olish endpointi bor.
+
+                    // To'liq profile logikasini qo'shish uchun backendda `/api/users/<id>` endpointi kerak.
+                    // Hozircha mavjud userlar orasidan qidiramiz:
+
+                    let targetUser = State.user;
+                    if (userId && userId != State.user.id) {
+                        // Boshqa user profileni ko'rish uchun backendda qo'shimcha API kerak
+                        // Hozircha shuni ko'rsatamiz:
+                        UI.toast('Boshqa foydalanuvchi profili hali tayyor emas', 'error');
+                        return;
+                    }
+
+                    API.getPosts(targetUser.id).then(posts => {
+                        const gridHtml = posts.length ? posts.map(p => `
+                            <div style="position:relative; cursor:pointer" onclick="UI.toast('Postni ochish')">
+                                <img src="${p.image}">
+                                <div style="position:absolute; top:10px; right:10px; color:white; font-size:1.2rem; text-shadow: 0 1px 3px rgba(0,0,0,0.8)">
+                                    <i class="fas fa-heart"></i> ${p.likes}
+                                </div>
+                            </div>
+                        `).join('') : '<div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-secondary)">Postlar yo\'q.</div>';
+
+                        main.innerHTML = `
+                            <div class="profile-header">
+                                <img src="${targetUser.avatar}" class="profile-avatar">
+                                <div style="flex:1">
+                                    <div style="display:flex; align-items:center; gap:10px; margin-bottom: 20px;">
+                                        <h2 style="font-size: 1.5rem;">${targetUser.username}</h2>
+                                        <button class="btn" style="border:1px solid var(--border-color)" onclick="UI.toast('Tahrirlash')">Tahrirlash</button>
+                                    </div>
+                                    <div class="profile-stats">
+                                        <div><span class="stat-num">${posts.length}</span><span class="stat-label">post</span></div>
+                                        <div><span class="stat-num">142</span><span class="stat-label">followers</span></div>
+                                        <div><span class="stat-num">45</span><span class="stat-label">following</span></div>
+                                    </div>
+                                    <div style="font-weight:600;">${targetUser.fullname}</div>
+                                    <div style="color:var(--text-secondary)">Creator • Digital Artist</div>
+                                </div>
+                            </div>
+                            <div class="flex" style="border-bottom: 1px solid var(--border-color); justify-content: center;">
+                                <div style="padding: 15px; border-top: 1px solid var(--text-main); font-weight: 600; cursor: pointer;"><i class="fas fa-th"></i> POSTLAR</div>
+                            </div>
+                            <div class="profile-grid">
+                                ${gridHtml}
+                            </div>
+                        `;
+                    });
                 } else if (page === 'reels') {
                     main.innerHTML = `<div style="height: 80vh; display: flex; align-items: center; justify-content: center; background: #000;">
                         <div style="text-align: center; color: white;">
                             <i class="fas fa-film" style="font-size: 3rem; margin-bottom: 20px;"></i>
                             <h2>Reels</h2>
-                            <p>Short video player simulation.</p>
-                        </div>
-                     </div>`;
-                } else if (page === 'messages') {
-                    main.innerHTML = `<div style="padding: 20px;">
-                        <h2>Messages</h2>
-                        <div style="margin-top: 20px;">
-                            <div style="padding: 10px; border-bottom: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center;">
-                                <img src="https://picsum.photos/seed/tech_guru/50/50" class="user-avatar-small">
-                                <div><strong>tech_guru</strong><br><span style="color:var(--text-secondary); font-size: 0.8rem;">Sent you a reel</span></div>
-                            </div>
-                             <div style="padding: 10px; border-bottom: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center;">
-                                <img src="https://picsum.photos/seed/sarah/50/50" class="user-avatar-small">
-                                <div><strong>sarah_travels</strong><br><span style="color:var(--text-secondary); font-size: 0.8rem;">Active now</span></div>
-                            </div>
                         </div>
                      </div>`;
                 }
+            },
+
+            async handleSearch(query) {
+                const resultsContainer = document.getElementById('search-results');
+                if (query.length < 2) {
+                    resultsContainer.innerHTML = `
+                        <img src="https://picsum.photos/seed/e1/300/300">
+                        <img src="https://picsum.photos/seed/e2/300/300">
+                        <img src="https://picsum.photos/seed/e3/300/300">
+                    `;
+                    return;
+                }
+                const posts = await API.searchPosts(query);
+                if (!posts) return;
+
+                if (posts.length === 0) {
+                    resultsContainer.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 20px;">Hech narsa topilmadi</div>`;
+                    return;
+                }
+                resultsContainer.innerHTML = posts.map(p => `
+                    <div style="position:relative; cursor:pointer" onclick="UI.toast('Post: ${p.caption.substring(0,10)}...')">
+                        <img src="${p.image}">
+                        <div style="position:absolute; bottom:5px; left:5px; color:white; font-size:0.8rem; text-shadow: 0 1px 3px rgba(0,0,0,0.8)">
+                            <i class="fas fa-heart"></i> ${p.likes}
+                        </div>
+                    </div>
+                `).join('');
             }
         };
 
-        // INITIALIZATION
+        // MockDB.init() o'chirildi, endi server ishlaydi
         window.addEventListener('DOMContentLoaded', () => {
-            MockDB.init();
-            if (State.user) {
+            if (State.user && AUTH_TOKEN) {
                 UI.initApp();
-            } else {
-                // Check hash for routing logic if needed, currently defaulting to auth
             }
         });
     </script>
