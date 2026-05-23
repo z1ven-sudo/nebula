@@ -7,7 +7,7 @@ from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # ---------------- APP SETUP ----------------
-app = Flask(__name__)
+app = Flask(__name__, template_folder='.')
 CORS(app)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
