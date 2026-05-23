@@ -325,7 +325,6 @@ if __name__ == '__main__':
         db.create_all()
         seed_data()
 
-    print("Server http://127.0.0.1:5000 ishlayapti 🚀")
+    print("Server http://127.0.0.1:8080 ishlayapti 🚀")
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
+app.run(host="0.0.0.0", port=8080)
