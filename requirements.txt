@@ -1,5 +1,2 @@
 flask
-flask-sqlalchemy
-flask-cors
 gunicorn
-werkzeug
