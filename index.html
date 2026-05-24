@@ -1165,6 +1165,17 @@ document.addEventListener('DOMContentLoaded', () => {
     DB.posts = await res.json();
 }
 
+    fetch("https://your-backend.up.railway.app/login", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        username: username,
+        password: password
+    })
+})
+
 </script>
 </body>
 </html>
