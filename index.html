@@ -4282,6 +4282,9 @@
             // DOMContentLoaded already fired
             init();
         }
+        fetch("/feed")
+.then(res => res.json())
+.then(data => console.log(data))
     </script>
 </body>
 
