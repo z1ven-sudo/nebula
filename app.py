@@ -1,58 +1,86 @@
 import os
-from flask import Flask, jsonify, request, render_template
+from flask import Flask
 
 app = Flask(__name__)
 
-users = []
-
-# Frontend
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Nebula</title>
 
-# Register
-@app.route("/register", methods=["POST"])
-def register():
+        <style>
 
-    data = request.json
+        body{
+            background:#0f172a;
+            color:white;
+            font-family:Arial;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            margin:0;
+        }
 
-    username = data.get("username")
-    password = data.get("password")
+        .box{
+            width:300px;
+            background:#1e293b;
+            padding:20px;
+            border-radius:15px;
+            text-align:center;
+        }
 
-    for user in users:
-        if user["username"] == username:
-            return jsonify({
-                "error": "Username already exists"
-            }), 400
+        button{
+            padding:12px 20px;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+            margin-top:10px;
+        }
 
-    users.append({
-        "username": username,
-        "password": password
-    })
+        </style>
+    </head>
 
-    return jsonify({
-        "message": "Account created"
-    })
+    <body>
 
-# Login
-@app.route("/login", methods=["POST"])
-def login():
+        <div class="box">
 
-    data = request.json
+            <h1>Nebula</h1>
 
-    username = data.get("username")
-    password = data.get("password")
+            <p>Instagram Clone Backend Online</p>
 
-    for user in users:
-        if user["username"] == username and user["password"] == password:
+            <button onclick="checkApi()">
+                Check API
+            </button>
 
-            return jsonify({
-                "message": "Login success"
-            })
+            <p id="status"></p>
 
-    return jsonify({
-        "error": "Invalid login"
-    }), 401
+        </div>
+
+        <script>
+
+        async function checkApi(){
+
+            const res = await fetch('/api')
+            const data = await res.json()
+
+            document.getElementById("status")
+                .innerText = data.status
+        }
+
+        </script>
+
+    </body>
+    </html>
+    """
+
+@app.route("/api")
+def api():
+    return {
+        "status":"Nebula online"
+    }
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
