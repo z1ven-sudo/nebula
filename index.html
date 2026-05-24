@@ -1,131 +1,1125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nebula | Social Universe</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-<title>Nebula</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --card-bg: rgba(20, 20, 20, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --primary: #8a2be2; /* Purple */
+            --secondary: #00ffff; /* Cyan */
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --danger: #ff4d4d;
+            --nav-height: 60px;
+            --max-width: 600px; /* Mobile focused width for main feed */
+        }
 
-<style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-body{
-    background:#0f172a;
-    font-family:Arial;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    margin:0;
-    color:white;
-}
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
 
-.box{
-    width:300px;
-    background:#1e293b;
-    padding:20px;
-    border-radius:15px;
-}
+        /* --- Global Utilities --- */
+        .hidden { display: none !important; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-10 { gap: 10px; }
+        .w-full { width: 100%; }
+        .text-gradient {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        
+        button {
+            border: none;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
 
-input{
-    width:100%;
-    padding:12px;
-    margin-top:10px;
-    border:none;
-    border-radius:10px;
-}
+        input, textarea {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: inherit;
+            outline: none;
+            transition: 0.3s;
+        }
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.2);
+        }
 
-button{
-    width:100%;
-    padding:12px;
-    margin-top:15px;
-    border:none;
-    border-radius:10px;
-    cursor:pointer;
-}
+        /* --- Glassmorphism --- */
+        .glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+        }
 
-#result{
-    margin-top:15px;
-}
+        /* --- App Container --- */
+        #app {
+            width: 100%;
+            max-width: var(--max-width);
+            height: 100%;
+            position: relative;
+            background: #000;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-</style>
+        /* --- Auth Screens --- */
+        .auth-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px;
+            z-index: 10;
+        }
+        .logo-huge {
+            font-size: 3rem;
+            margin-bottom: 40px;
+            text-align: center;
+            letter-spacing: -1px;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1rem;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .btn-primary:active { transform: scale(0.98); }
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .auth-switch span {
+            color: var(--secondary);
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* --- Navigation --- */
+        .nav-bar {
+            height: var(--nav-height);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(5, 5, 5, 0.9);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            flex-shrink: 0;
+        }
+        .nav-item {
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            transition: 0.3s;
+            position: relative;
+        }
+        .nav-item.active {
+            color: var(--secondary);
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+        }
+        .nav-item .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--primary);
+            color: white;
+            font-size: 0.6rem;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- Main Content Area --- */
+        .main-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 80px; /* Space for nav */
+            scroll-behavior: smooth;
+        }
+        /* Hide Scrollbar */
+        .main-scroll::-webkit-scrollbar { display: none; }
+
+        /* --- Header --- */
+        .top-header {
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title { font-size: 1.5rem; letter-spacing: 1px; }
+        .action-icon { font-size: 1.2rem; color: white; cursor: pointer; }
+
+        /* --- Stories --- */
+        .stories-tray {
+            display: flex;
+            gap: 15px;
+            padding: 15px 20px;
+            overflow-x: auto;
+            margin-bottom: 10px;
+        }
+        .stories-tray::-webkit-scrollbar { display: none; }
+        
+        .story-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            min-width: 70px;
+        }
+        .story-ring {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            padding: 2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            position: relative;
+        }
+        .story-ring.seen { background: #333; }
+        .story-avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid #000;
+            object-fit: cover;
+        }
+        .story-username {
+            font-size: 0.7rem;
+            margin-top: 5px;
+            color: var(--text-muted);
+            max-width: 70px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* --- Posts --- */
+        .post {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .post-header {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .post-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        .user-avatar-sm {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .username { font-weight: 600; font-size: 0.95rem; }
+        
+        .post-image-container {
+            width: 100%;
+            min-height: 300px;
+            background: #111;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .post-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Instagram style */
+            max-height: 600px;
+        }
+
+        .post-actions {
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.5rem;
+        }
+        .action-left { display: flex; gap: 20px; }
+        .post-action-icon { transition: 0.2s; cursor: pointer; }
+        .post-action-icon:hover { color: var(--text-muted); transform: scale(1.1); }
+        .post-action-icon.liked { color: var(--danger); animation: pop 0.3s; }
+        
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .post-content { padding: 0 15px 10px 15px; }
+        .likes-count { font-weight: 600; margin-bottom: 6px; font-size: 0.9rem; }
+        .caption { font-size: 0.9rem; line-height: 1.4; }
+        .caption .name { font-weight: 600; margin-right: 5px; }
+        .view-comments {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+        .comment-input-area {
+            display: flex;
+            padding: 10px 15px;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 10px;
+        }
+        .comment-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 0.9rem;
+            padding: 5px;
+        }
+        .post-btn {
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            opacity: 0.5;
+            cursor: default;
+        }
+        .post-btn.active { opacity: 1; cursor: pointer; }
+
+        /* --- Explore Grid --- */
+        .explore-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+        }
+        .explore-item {
+            position: relative;
+            padding-bottom: 100%; /* Square */
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .explore-img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.3s;
+        }
+        .explore-item:hover .explore-img { transform: scale(1.1); filter: brightness(0.7); }
+        .explore-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: 0.3s;
+            color: white;
+            font-weight: 600;
+            gap: 10px;
+        }
+        .explore-item:hover .explore-overlay { opacity: 1; }
+
+        /* --- Profile --- */
+        .profile-header {
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        .profile-avatar-lg {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid var(--secondary);
+            object-fit: cover;
+        }
+        .profile-stats {
+            flex: 1;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        .stat-num { display: block; font-weight: 700; font-size: 1.1rem; }
+        .stat-label { font-size: 0.8rem; color: var(--text-muted); }
+        
+        .profile-bio { padding: 0 20px 15px 20px; }
+        .bio-name { font-weight: 600; }
+        .bio-text { font-size: 0.9rem; color: var(--text-muted); margin-top: 4px; }
+        
+        .profile-actions {
+            padding: 0 20px 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .edit-profile-btn {
+            flex: 1;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* --- Story Viewer Modal --- */
+        #story-viewer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+        }
+        .story-progress-container {
+            display: flex;
+            gap: 5px;
+            padding: 10px;
+            position: absolute;
+            top: 0; width: 100%; z-index: 210;
+        }
+        .story-progress-bar {
+            flex: 1;
+            height: 2px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .story-progress-fill {
+            height: 100%;
+            background: white;
+            width: 0%;
+        }
+        .story-content {
+            flex: 1;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .story-nav {
+            position: absolute;
+            top: 0; bottom: 0; width: 30%;
+            z-index: 205;
+            cursor: pointer;
+        }
+        .story-nav.left { left: 0; }
+        .story-nav.right { right: 0; }
+        .story-header {
+            position: absolute;
+            top: 20px; left: 0; width: 100%;
+            padding: 0 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 210;
+        }
+        .story-close {
+            position: absolute;
+            top: 20px; right: 20px;
+            color: white;
+            font-size: 1.5rem;
+            z-index: 220;
+            cursor: pointer;
+        }
+
+        /* --- Toast Notification --- */
+        .toast {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(255, 255, 255, 0.9);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 300;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: max-content;
+            max-width: 90%;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast i { color: var(--primary); }
+
+        /* --- Floating Action Button (Create) --- */
+        .fab {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+            z-index: 90;
+            transition: 0.3s;
+        }
+        .fab:hover { transform: scale(1.1) rotate(90deg); }
+
+        /* --- Create Modal --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 150;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-card {
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        .modal-header { font-size: 1.2rem; font-weight: 600; margin-bottom: 15px; text-align: center; }
+        .upload-preview {
+            width: 100%;
+            height: 200px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            border: 2px dashed var(--glass-border);
+            color: var(--text-muted);
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .upload-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+    </style>
 </head>
 <body>
 
-<div class="box">
+    <div id="app">
+        
+        <!-- === AUTHENTICATION VIEW === -->
+        <div id="view-auth" class="auth-container">
+            <h1 class="logo-huge text-gradient">Nebula</h1>
+            
+            <!-- Login Form -->
+            <div id="form-login">
+                <input type="text" id="login-username" class="w-full" placeholder="Username" style="margin-bottom: 15px;">
+                <input type="password" id="login-password" class="w-full" placeholder="Password">
+                <button class="btn-primary" onclick="app.login()">Log In</button>
+                <div class="auth-switch">
+                    Don't have an account? <span onclick="app.toggleAuth('register')">Sign Up</span>
+                </div>
+            </div>
 
-    <h1>Nebula</h1>
+            <!-- Register Form -->
+            <div id="form-register" class="hidden">
+                <input type="text" id="reg-username" class="w-full" placeholder="Choose a Username" style="margin-bottom: 15px;">
+                <input type="password" id="reg-password" class="w-full" placeholder="Choose a Password">
+                <button class="btn-primary" onclick="app.register()">Join Nebula</button>
+                <div class="auth-switch">
+                    Already have an account? <span onclick="app.toggleAuth('login')">Log In</span>
+                </div>
+            </div>
+        </div>
 
-    <input type="text" id="username" placeholder="Username">
+        <!-- === MAIN APP VIEW === -->
+        <div id="view-main" class="flex-col w-full h-full hidden">
+            
+            <!-- Header -->
+            <div class="top-header glass">
+                <div class="header-title text-gradient">Nebula</div>
+                <div class="flex gap-10">
+                    <i class="fa-regular fa-heart action-icon"></i>
+                    <i class="fa-brands fa-facebook-messenger action-icon"></i>
+                </div>
+            </div>
 
-    <input type="password" id="password" placeholder="Password">
+            <!-- Content Area -->
+            <div id="content-area" class="main-scroll">
+                <!-- Dynamic Content Injected Here -->
+            </div>
 
-    <button onclick="register()">
-        Register
-    </button>
+            <!-- FAB Create Post -->
+            <div class="fab" onclick="app.openCreateModal()">
+                <i class="fa-solid fa-plus"></i>
+            </div>
 
-    <button onclick="login()">
-        Login
-    </button>
+            <!-- Bottom Navigation -->
+            <nav class="nav-bar">
+                <div class="nav-item active" onclick="app.navigate('home')">
+                    <i class="fa-solid fa-house"></i>
+                </div>
+                <div class="nav-item" onclick="app.navigate('explore')">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <div class="nav-item" onclick="app.openCreateModal()">
+                    <i class="fa-regular fa-square-plus"></i>
+                </div>
+                <div class="nav-item" onclick="app.navigate('messages')">
+                    <i class="fa-brands fa-facebook-messenger"></i>
+                </div>
+                <div class="nav-item" onclick="app.navigate('profile')">
+                    <img id="nav-avatar" src="" class="user-avatar-sm" style="border: 1px solid var(--primary);">
+                </div>
+            </nav>
+        </div>
 
-    <p id="result"></p>
+        <!-- === STORY VIEWER === -->
+        <div id="story-viewer" class="hidden">
+            <div class="story-progress-container" id="story-bars"></div>
+            <div class="story-nav left" onclick="app.prevStory()"></div>
+            <div class="story-nav right" onclick="app.nextStory()"></div>
+            <div class="story-close" onclick="app.closeStory()"><i class="fa-solid fa-xmark"></i></div>
+            
+            <div class="story-header">
+                <img id="story-user-img" src="" class="user-avatar-sm" style="border: 1px solid white;">
+                <span id="story-username" style="font-weight: 600; text-shadow: 0 1px 3px black;"></span>
+                <span style="opacity: 0.8; font-size: 0.8rem; margin-left: 5px;">2h</span>
+            </div>
+            
+            <div id="story-display" class="story-content"></div>
+        </div>
 
-</div>
+        <!-- === CREATE MODAL === -->
+        <div id="modal-create" class="modal-overlay hidden" onclick="if(event.target === this) app.closeCreateModal()">
+            <div class="modal-card glass">
+                <div class="modal-header">Create New Post</div>
+                <div class="upload-preview" id="upload-preview-area" onclick="document.getElementById('file-input').click()">
+                    <span id="upload-placeholder">Tap to select Image</span>
+                    <img id="preview-img" class="hidden">
+                </div>
+                <input type="file" id="file-input" class="hidden" accept="image/*" onchange="app.handleFileSelect(this)">
+                <textarea id="create-caption" class="w-full" rows="3" placeholder="Write a caption..." style="margin-bottom: 15px;"></textarea>
+                <button class="btn-primary" onclick="app.createPost()">Share</button>
+            </div>
+        </div>
+
+        <!-- Toast -->
+        <div id="toast" class="toast">
+            <i class="fa-solid fa-check-circle"></i>
+            <span id="toast-msg">Action Successful</span>
+        </div>
+
+    </div>
 
 <script>
+/**
+ * NEBULA - Full Stack Simulation
+ * Contains Mock DB, Logic, and Rendering
+ */
 
-const API = ""
+// --- MOCK DATABASE ---
+const DB = {
+    users: [
+        { id: 1, username: 'neon_rider', avatar: 'https://picsum.photos/seed/neon/100/100', bio: 'Living in the digital void 🌌', followers: 1200, following: 450 },
+        { id: 2, username: 'cyber_punk', avatar: 'https://picsum.photos/seed/cyber/100/100', bio: 'Tech wizard & Code ninja', followers: 8500, following: 120 },
+        { id: 3, username: 'aura_vibes', avatar: 'https://picsum.photos/seed/aura/100/100', bio: 'Synthesizer enthusiast 🎹', followers: 320, following: 500 },
+        { id: 4, username: 'glitch_god', avatar: 'https://picsum.photos/seed/glitch/100/100', bio: 'Breaking systems since 1999', followers: 5600, following: 10 },
+    ],
+    posts: [
+        { id: 101, userId: 2, image: 'https://picsum.photos/seed/post1/600/600', caption: 'Late night coding session. The stack is burning hot! 🔥 #coding #nebula', likes: 124, comments: [{user: 'neon_rider', text: 'Clean setup!'}] },
+        { id: 102, userId: 3, image: 'https://picsum.photos/seed/post2/600/800', caption: 'City lights from the rooftop.', likes: 89, comments: [] },
+        { id: 103, userId: 4, image: 'https://picsum.photos/seed/post3/600/600', caption: 'Glitch art is the future.', likes: 342, comments: [{user: 'cyber_punk', text: 'Totally agree.'}] },
+        { id: 104, userId: 1, image: 'https://picsum.photos/seed/post4/600/700', caption: 'Riding the wave.', likes: 56, comments: [] },
+    ],
+    stories: [
+        { id: 1, userId: 2, image: 'https://picsum.photos/seed/story1/400/800' },
+        { id: 2, userId: 3, image: 'https://picsum.photos/seed/story2/400/800' },
+        { id: 3, userId: 4, image: 'https://picsum.photos/seed/story3/400/800' },
+    ],
+    currentUser: null
+};
 
-async function register(){
+// --- APP LOGIC ---
+const app = {
+    state: {
+        currentView: 'home',
+        storyIndex: 0,
+        storyTimer: null
+    },
 
-    const username =
-        document.getElementById("username").value
+    init() {
+        // Check session
+        const sessionUser = localStorage.getItem('nebula_user');
+        if (sessionUser) {
+            DB.currentUser = JSON.parse(sessionUser);
+            this.showMainApp();
+        } else {
+            this.showAuth();
+        }
+    },
 
-    const password =
-        document.getElementById("password").value
+    // --- AUTH ---
+    toggleAuth(mode) {
+        if (mode === 'register') {
+            document.getElementById('form-login').classList.add('hidden');
+            document.getElementById('form-register').classList.remove('hidden');
+        } else {
+            document.getElementById('form-register').classList.add('hidden');
+            document.getElementById('form-login').classList.remove('hidden');
+        }
+    },
 
-    const res = await fetch(API + "/register", {
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-            username,
-            password
-        })
-    })
+    register() {
+        const username = document.getElementById('reg-username').value.trim();
+        const password = document.getElementById('reg-password').value.trim();
+        
+        if (!username || !password) return this.toast('Please fill all fields');
+        if (DB.users.find(u => u.username === username)) return this.toast('Username taken');
 
-    const data = await res.json()
+        const newUser = {
+            id: Date.now(),
+            username: username,
+            avatar: `https://picsum.photos/seed/${username}/100/100`,
+            bio: 'New to Nebula 🚀',
+            followers: 0,
+            following: 0
+        };
+        
+        DB.users.push(newUser);
+        // Auto login
+        DB.currentUser = newUser;
+        localStorage.setItem('nebula_user', JSON.stringify(newUser));
+        this.showMainApp();
+        this.toast('Welcome to Nebula!');
+    },
 
-    document.getElementById("result")
-        .innerText = data.message || data.error
-}
+    login() {
+        const username = document.getElementById('login-username').value.trim();
+        const password = document.getElementById('login-password').value.trim();
 
-async function login(){
+        // Simulate auth check (ignore password for demo simplicity)
+        const user = DB.users.find(u => u.username === username);
+        
+        if (user) {
+            DB.currentUser = user;
+            localStorage.setItem('nebula_user', JSON.stringify(user));
+            this.showMainApp();
+            this.toast(`Welcome back, ${user.username}!`);
+        } else {
+            this.toast('Invalid credentials');
+        }
+    },
 
-    const username =
-        document.getElementById("username").value
+    logout() {
+        localStorage.removeItem('nebula_user');
+        DB.currentUser = null;
+        location.reload();
+    },
 
-    const password =
-        document.getElementById("password").value
+    // --- NAVIGATION ---
+    showAuth() {
+        document.getElementById('view-auth').classList.remove('hidden');
+        document.getElementById('view-main').classList.add('hidden');
+    },
 
-    const res = await fetch(API + "/login", {
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-            username,
-            password
-        })
-    })
+    showMainApp() {
+        document.getElementById('view-auth').classList.add('hidden');
+        document.getElementById('view-main').classList.remove('hidden');
+        document.getElementById('nav-avatar').src = DB.currentUser.avatar;
+        this.navigate('home');
+    },
 
-    const data = await res.json()
+    navigate(view) {
+        this.state.currentView = view;
+        
+        // Update Nav UI
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        // Simple mapping for demo icons
+        const iconIndex = ['home', 'explore', 'create', 'messages', 'profile'].indexOf(view);
+        if(iconIndex > -1 && iconIndex !== 2) { // 2 is create (fab)
+           document.querySelectorAll('.nav-item')[iconIndex].classList.add('active');
+        }
 
-    document.getElementById("result")
-        .innerText = data.message || data.error
-}
+        const content = document.getElementById('content-area');
+        content.innerHTML = ''; // Clear content
+
+        if (view === 'home') this.renderHome(content);
+        else if (view === 'explore') this.renderExplore(content);
+        else if (view === 'profile') this.renderProfile(content, DB.currentUser.id);
+        else if (view === 'messages') this.renderMessages(content);
+    },
+
+    // --- RENDERERS ---
+    renderHome(container) {
+        // Render Stories
+        const storiesHTML = `
+            <div class="stories-tray glass" style="border-radius: 10px; margin: 15px; border:none;">
+                <div class="story-item">
+                    <div class="story-ring" style="border: 2px dashed #555; background: transparent;">
+                        <div class="story-avatar" style="display:flex;align-items:center;justify-content:center;background:#222;color:#fff;font-size:1.5rem;">+</div>
+                    </div>
+                    <span class="story-username">Add Story</span>
+                </div>
+                ${DB.stories.map(s => {
+                    const u = DB.users.find(user => user.id === s.userId);
+                    return `
+                    <div class="story-item" onclick="app.viewStory(${s.id})">
+                        <div class="story-ring">
+                            <img src="${u.avatar}" class="story-avatar">
+                        </div>
+                        <span class="story-username">${u.username}</span>
+                    </div>`;
+                }).join('')}
+            </div>
+        `;
+
+        // Render Posts
+        let postsHTML = '';
+        DB.posts.forEach(post => {
+            const user = DB.users.find(u => u.id === post.userId);
+            postsHTML += `
+                <article class="post glass">
+                    <div class="post-header">
+                        <div class="post-user" onclick="app.navigate('profile')">
+                            <img src="${user.avatar}" class="user-avatar-sm">
+                            <span class="username">${user.username}</span>
+                        </div>
+                        <i class="fa-solid fa-ellipsis text-muted"></i>
+                    </div>
+                    <div class="post-image-container">
+                        <img src="${post.image}" class="post-image" loading="lazy">
+                    </div>
+                    <div class="post-actions">
+                        <div class="action-left">
+                            <i class="fa-regular fa-heart post-action-icon" id="like-btn-${post.id}" onclick="app.toggleLike(${post.id})"></i>
+                            <i class="fa-regular fa-comment post-action-icon"></i>
+                            <i class="fa-regular fa-paper-plane post-action-icon"></i>
+                        </div>
+                        <i class="fa-regular fa-bookmark post-action-icon"></i>
+                    </div>
+                    <div class="post-content">
+                        <div class="likes-count" id="likes-count-${post.id}">${post.likes} likes</div>
+                        <div class="caption">
+                            <span class="name">${user.username}</span> ${post.caption}
+                        </div>
+                        <div class="view-comments" onclick="app.toggleComments(${post.id})">
+                            View all ${post.comments.length} comments
+                        </div>
+                        <div class="comment-input-area" id="comment-sec-${post.id}">
+                            <input type="text" class="comment-input" placeholder="Add a comment..." id="input-${post.id}" onkeyup="app.checkCommentInput(${post.id})">
+                            <span class="post-btn" id="post-btn-${post.id}" onclick="app.postComment(${post.id})">Post</span>
+                        </div>
+                    </div>
+                </article>
+            `;
+        });
+
+        container.innerHTML = storiesHTML + postsHTML;
+    },
+
+    renderExplore(container) {
+        // Generate random grid images
+        let html = '<div class="explore-grid">';
+        for(let i=0; i<15; i++) {
+            html += `
+                <div class="explore-item">
+                    <img src="https://picsum.photos/seed/explore${i}/300/300" class="explore-img">
+                    <div class="explore-overlay">
+                        <span><i class="fa-solid fa-heart"></i> ${Math.floor(Math.random()*500)}</span>
+                        <span><i class="fa-solid fa-comment"></i> ${Math.floor(Math.random()*50)}</span>
+                    </div>
+                </div>
+            `;
+        }
+        html += '</div>';
+        container.innerHTML = html;
+    },
+
+    renderProfile(container, userId) {
+        const user = (userId === DB.currentUser.id) ? DB.currentUser : DB.users.find(u => u.id === userId);
+        if(!user) return;
+
+        const userPosts = DB.posts.filter(p => p.userId === user.id);
+        
+        let postsGrid = '<div class="explore-grid">';
+        userPosts.forEach(p => {
+             postsGrid += `<div class="explore-item"><img src="${p.image}" class="explore-img"></div>`;
+        });
+        postsGrid += '</div>';
+
+        const isMe = user.id === DB.currentUser.id;
+
+        container.innerHTML = `
+            <div class="profile-header">
+                <img src="${user.avatar}" class="profile-avatar-lg">
+                <div class="profile-stats">
+                    <div><span class="stat-num">${userPosts.length}</span><span class="stat-label">Posts</span></div>
+                    <div><span class="stat-num">${user.followers}</span><span class="stat-label">Followers</span></div>
+                    <div><span class="stat-num">${user.following}</span><span class="stat-label">Following</span></div>
+                </div>
+            </div>
+            <div class="profile-bio">
+                <div class="bio-name">${user.username}</div>
+                <div class="bio-text">${user.bio}</div>
+            </div>
+            <div class="profile-actions">
+                ${isMe ? 
+                    `<button class="edit-profile-btn" onclick="app.logout()" style="background:rgba(255,77,77,0.2);color:#ff4d4d;">Log Out</button>
+                     <button class="edit-profile-btn">Edit Profile</button>` : 
+                    `<button class="edit-profile-btn" style="background:white; color:black;">Follow</button>
+                     <button class="edit-profile-btn">Message</button>`
+                }
+            </div>
+            <div style="border-top:1px solid var(--glass-border); margin-top:10px;">
+                ${postsGrid}
+            </div>
+        `;
+    },
+
+    renderMessages(container) {
+        container.innerHTML = `
+            <div style="padding: 20px; text-align: center; color: var(--text-muted); margin-top: 50px;">
+                <i class="fa-brands fa-facebook-messenger" style="font-size: 3rem; margin-bottom: 20px; opacity: 0.5;"></i>
+                <h2>Your Messages</h2>
+                <p>Send private messages to friends.</p>
+                <button class="btn-primary" style="width:auto; margin-top:20px;">Send Message</button>
+            </div>
+        `;
+    },
+
+    // --- INTERACTIONS ---
+    toggleLike(postId) {
+        const post = DB.posts.find(p => p.id === postId);
+        const btn = document.getElementById(`like-btn-${postId}`);
+        const count = document.getElementById(`likes-count-${postId}`);
+        
+        if (btn.classList.contains('liked')) {
+            post.likes--;
+            btn.classList.remove('liked', 'fa-solid');
+            btn.classList.add('fa-regular');
+        } else {
+            post.likes++;
+            btn.classList.add('liked', 'fa-solid');
+            btn.classList.remove('fa-regular');
+        }
+        
+        count.innerText = `${post.likes} likes`;
+    },
+
+    checkCommentInput(postId) {
+        const input = document.getElementById(`input-${postId}`);
+        const btn = document.getElementById(`post-btn-${postId}`);
+        if (input.value.trim().length > 0) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    },
+
+    postComment(postId) {
+        const input = document.getElementById(`input-${postId}`);
+        const text = input.value.trim();
+        if (!text) return;
+
+        const post = DB.posts.find(p => p.id === postId);
+        post.comments.push({ user: DB.currentUser.username, text: text });
+        
+        input.value = '';
+        this.checkCommentInput(postId);
+        this.toast('Comment posted');
+        // In a real app, we'd append the comment to DOM here instead of re-rendering
+    },
+
+    toggleComments(postId) {
+        // Placeholder for expanding comments
+        this.toast('Comments expansion UI would go here');
+    },
+
+    // --- CREATE POST ---
+    openCreateModal() {
+        document.getElementById('modal-create').classList.remove('hidden');
+    },
+    closeCreateModal() {
+        document.getElementById('modal-create').classList.add('hidden');
+        // Reset form
+        document.getElementById('preview-img').classList.add('hidden');
+        document.getElementById('upload-placeholder').classList.remove('hidden');
+        document.getElementById('create-caption').value = '';
+    },
+    handleFileSelect(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('preview-img');
+                img.src = e.target.result;
+                img.classList.remove('hidden');
+                document.getElementById('upload-placeholder').classList.add('hidden');
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    },
+    createPost() {
+        const caption = document.getElementById('create-caption').value;
+        const img = document.getElementById('preview-img').src;
+        
+        if (document.getElementById('preview-img').classList.contains('hidden')) {
+            return this.toast('Please select an image');
+        }
+
+        const newPost = {
+            id: Date.now(),
+            userId: DB.currentUser.id,
+            image: img,
+            caption: caption,
+            likes: 0,
+            comments: []
+        };
+
+        DB.posts.unshift(newPost); // Add to top
+        this.closeCreateModal();
+        this.toast('Post shared successfully!');
+        
+        if (this.state.currentView === 'home' || this.state.currentView === 'profile') {
+            this.navigate(this.state.currentView); // Refresh
+        }
+    },
+
+    // --- STORIES ---
+    viewStory(storyId) {
+        this.state.storyIndex = DB.stories.findIndex(s => s.id === storyId);
+        this.loadStoryUI();
+        document.getElementById('story-viewer').classList.remove('hidden');
+        this.startStoryTimer();
+    },
+
+    loadStoryUI() {
+        const story = DB.stories[this.state.storyIndex];
+        const user = DB.users.find(u => u.id === story.userId);
+        
+        // Set Content
+        const display = document.getElementById('story-display');
+        display.style.backgroundImage = `url(${story.image})`;
+        document.getElementById('story-user-img').src = user.avatar;
+        document.getElementById('story-username').innerText = user.username;
+
+        // Render Progress Bars
+        const barsContainer = document.getElementById('story-bars');
+        barsContainer.innerHTML = DB.stories.map((s, i) => `
+            <div class="story-progress-bar">
+                <div class="story-progress-fill" id="story-fill-${i}" style="${i < this.state.storyIndex ? 'width:100%' : 'width:0%'}"></div>
+            </div>
+        `).join('');
+    },
+
+    startStoryTimer() {
+        clearInterval(this.state.storyTimer);
+        const duration = 5000; // 5 seconds per story
+        const startTime = Date.now();
+        const currentFill = document.getElementById(`story-fill-${this.state.storyIndex}`);
+
+        this.state.storyTimer = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const pct = Math.min((elapsed / duration) * 100, 100);
+            
+            if (currentFill) currentFill.style.width = `${pct}%`;
+
+            if (elapsed >= duration) {
+                this.nextStory();
+            }
+        }, 50);
+    },
+
+    nextStory() {
+        if (this.state.storyIndex < DB.stories.length - 1) {
+            this.state.storyIndex++;
+            this.loadStoryUI();
+            this.startStoryTimer();
+        } else {
+            this.closeStory();
+        }
+    },
+
+    prevStory() {
+        if (this.state.storyIndex > 0) {
+            this.state.storyIndex--;
+            this.loadStoryUI();
+            this.startStoryTimer();
+        }
+    },
+
+    closeStory() {
+        clearInterval(this.state.storyTimer);
+        document.getElementById('story-viewer').classList.add('hidden');
+    },
+
+    // --- UTILS ---
+    toast(msg) {
+        const el = document.getElementById('toast');
+        document.getElementById('toast-msg').innerText = msg;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 3000);
+    }
+};
+
+// Initialize App
+document.addEventListener('DOMContentLoaded', () => {
+    app.init();
+});
 
 </script>
-
 </body>
 </html>
