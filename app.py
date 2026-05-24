@@ -523,10 +523,9 @@ HTML_PAGE = """
 
     <!-- --- JAVASCRIPT LOGIC --- -->
     <script>
-        /**
-         * NEBULA APP LOGIC
-         * Ma'lumotlar localStorage'da saqlanadi (persistence).
-         */
+      
+     
+const API = "https://SENING-RAILWAY-LINKING.up.railway.app";
 
         // --- MOCK DATABASE (Boshlang'ich ma'lumotlar) ---
         const defaultDB = {
@@ -567,17 +566,51 @@ HTML_PAGE = """
             },
 
             // Ro'yxatdan o'tish logikasi
-            handleRegister: (e) => {
-                e.preventDefault();
-                const username = document.getElementById('reg-username').value;
-                const email = document.getElementById('reg-email').value;
-                const password = document.getElementById('reg-password').value;
+handleLogin: async (e) => {
+    e.preventDefault();
 
-                // Takroriy nomni tekshirish
-                if(db.users.find(u => u.username === username)) {
-                    ui.toast('Bu username band qilingan!', 'error');
-                    return;
-                }
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+
+    try {
+
+        const res = await fetch(API + "/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username,
+                password
+            })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+
+            db.currentUser = data.user;
+
+            sessionStorage.setItem(
+                "nebula_session",
+                JSON.stringify(data.user)
+            );
+
+            ui.toast("Welcome " + data.user.username);
+
+            document.getElementById('auth-container').style.display = 'none';
+
+            app.loadApp();
+
+        } else {
+            ui.toast(data.error, "error");
+        }
+
+    } catch (err) {
+        ui.toast("Server error", "error");
+        console.log(err);
+    }
+},
 
                 const newUser = {
                     id: Date.now(),
