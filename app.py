@@ -441,7 +441,7 @@ HTML_PAGE = """
                 </div>
                 <div style="display: flex; gap: 15px;">
                     <i class="fa-solid fa-plus-square" onclick="ui.openCreateModal()"></i>
-                    <i class="fa-solid fa-bars" onclick="ui.toast('Menu tez orada qo\'shiladi')"></i>
+                 <i class="fa-solid fa-bars" onclick="ui.toast(`Menu tez orada qo'shiladi`)"></i>
                 </div>
             </header>
 
