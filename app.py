@@ -520,7 +520,9 @@ HTML_PAGE = """
             <button class="btn-primary" style="margin-top: 20px;" onclick="app.createPost()">Post Qilish</button>
         </div>
     </div>
-
+<form onsubmit="app.handleLogin(event)">
+<form onsubmit="return app.handleLogin(event)">
+<form onsubmit="return app.handleRegister(event)">
     <!-- --- JAVASCRIPT LOGIC --- -->
     <script>
       
@@ -1018,6 +1020,18 @@ handleLogin: async (e) => {
                 setTimeout(() => { if(overlay.parentNode) overlay.remove(); }, 5000);
             }
         };
+
+        handleLogin: async (e) => {
+    e.preventDefault();
+    ...
+    return false;
+},
+
+handleRegister: async (e) => {
+    e.preventDefault();
+    ...
+    return false;
+},
 
         // --- INIT ---
         window.addEventListener('load', app.init);
