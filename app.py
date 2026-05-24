@@ -614,20 +614,20 @@ handleLogin: async (e) => {
     }
 },
 
-                const newUser = {
-                    id: Date.now(),
-                    username: username,
-                    email: email,
-                    password: password, // Haqiqiy loyihada kriptografyalash kerak!
-                    avatar: `https://picsum.photos/seed/${username}/200`,
-                    verified: false,
-                    bio: 'Yangi foydalanuvchi',
-                    followers: 0,
-                    following: 0
-                };
+              const newUser = {
+    id: Date.now(),
+    username: username,
+    password: password,
+    avatar: `https://picsum.photos/seed/${username}/200`,
+    verified: false,
+    bio: 'Yangi foydalanuvchi',
+    followers: 0,
+    following: 0
+};
 
-                db.users.push(newUser);
-                storage.save(); // Yangi userni saqlash
+         db.users.push(newUser);
+
+storage.save();
                 
                 ui.toast('Muaffaqiyatli ro\'yxatdan o\'tdingiz!');
                 
