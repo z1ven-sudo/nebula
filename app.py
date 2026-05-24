@@ -568,77 +568,44 @@ const API = "https://SENING-RAILWAY-LINKING.up.railway.app";
             },
 
             // Ro'yxatdan o'tish logikasi
-handleLogin: async (e) => {
+
+handleRegister: (e) => {
     e.preventDefault();
 
-    const username = document.getElementById('login-username').value;
-    const password = document.getElementById('login-password').value;
+    const username = document.getElementById('reg-username').value;
+    const email = document.getElementById('reg-email').value;
+    const password = document.getElementById('reg-password').value;
 
-    try {
-
-        const res = await fetch(API + "/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                username,
-                password
-            })
-        });
-
-        const data = await res.json();
-
-        if (res.ok) {
-
-            db.currentUser = data.user;
-
-            sessionStorage.setItem(
-                "nebula_session",
-                JSON.stringify(data.user)
-            );
-
-            ui.toast("Welcome " + data.user.username);
-
-            document.getElementById('auth-container').style.display = 'none';
-
-            app.loadApp();
-
-        } else {
-            ui.toast(data.error, "error");
-        }
-
-    } catch (err) {
-        ui.toast("Server error", "error");
-        console.log(err);
+    if (db.users.find(u => u.username === username)) {
+        ui.toast('Bu username band qilingan!', 'error');
+        return;
     }
+
+    const newUser = {
+        id: Date.now(),
+        username: username,
+        email: email,
+        password: password,
+        avatar: `https://picsum.photos/seed/${username}/200`,
+        verified: false,
+        bio: 'Yangi foydalanuvchi',
+        followers: 0,
+        following: 0
+    };
+
+    db.users.push(newUser);
+    storage.save();
+
+    ui.toast('Muvaffaqiyatli ro‘yxatdan o‘tdingiz!');
+
+    db.currentUser = newUser;
+    sessionStorage.setItem('nebula_session', JSON.stringify(newUser));
+
+    document.getElementById('auth-container').style.display = 'none';
+    app.loadApp();
 },
-
-              const newUser = {
-    id: Date.now(),
-    username: username,
-    password: password,
-    avatar: `https://picsum.photos/seed/${username}/200`,
-    verified: false,
-    bio: 'Yangi foydalanuvchi',
-    followers: 0,
-    following: 0
-};
-
-         db.users.push(newUser);
-
-storage.save();
                 
-                ui.toast('Muaffaqiyatli ro\'yxatdan o\'tdingiz!');
                 
-                // Avtomatik login
-                db.currentUser = newUser;
-                sessionStorage.setItem('nebula_session', JSON.stringify(newUser));
-                
-                document.getElementById('auth-container').style.display = 'none';
-                app.loadApp();
-            },
-
             // Kirish logikasi
             handleLogin: (e) => {
                 e.preventDefault();
