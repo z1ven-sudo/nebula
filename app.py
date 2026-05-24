@@ -5,222 +5,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# ---------------- DATABASE ----------------
-
-users = [
-    {
-        "id": 1,
-        "username": "neon_wolf",
-        "password": "1234",
-        "avatar": "https://picsum.photos/seed/u1/200",
-        "verified": True,
-        "bio": "Cyberpunk enthusiast",
-        "followers": 1250,
-        "following": 340
-    }
-]
-
-posts = [
-    {
-        "id": 1,
-        "userId": 1,
-        "type": "image",
-        "media": "https://picsum.photos/seed/p1/600/600",
-        "content": "Welcome to Nebula 🚀",
-        "likes": 15,
-        "comments": [],
-        "timestamp": "now"
-    }
-]
-
-notifications = []
-
-# ---------------- HOME ----------------
-
-@app.route("/")
-def home():
-    return jsonify({
-        "app": "Nebula API",
-        "status": "online"
-    })
-
-# ---------------- REGISTER ----------------
-
-@app.route("/register", methods=["POST"])
-def register():
-
-    data = request.json
-
-    username = data.get("username")
-    password = data.get("password")
-
-    # CHECK USER
-    for user in users:
-        if user["username"] == username:
-            return jsonify({
-                "error": "Username already exists"
-            }), 400
-
-    new_user = {
-        "id": len(users) + 1,
-        "username": username,
-        "password": password,
-        "avatar": "https://picsum.photos/200",
-        "verified": False,
-        "bio": "",
-        "followers": 0,
-        "following": 0
-    }
-
-    users.append(new_user)
-
-    return jsonify({
-        "message": "Account created",
-        "user": new_user
-    })
-
-# ---------------- LOGIN ----------------
-
-@app.route("/login", methods=["POST"])
-def login():
-
-    data = request.json
-
-    username = data.get("username")
-    password = data.get("password")
-
-    for user in users:
-
-        if user["username"] == username and user["password"] == password:
-
-            return jsonify({
-                "message": "Login success",
-                "user": user
-            })
-
-    return jsonify({
-        "error": "Invalid username or password"
-    }), 401
-
-# ---------------- FEED ----------------
-
-@app.route("/feed")
-def feed():
-    return jsonify(posts)
-
-# ---------------- USERS ----------------
-
-@app.route("/users")
-def get_users():
-    return jsonify(users)
-
-# ---------------- PROFILE ----------------
-
-@app.route("/profile/<username>")
-def profile(username):
-
-    for user in users:
-
-        if user["username"] == username:
-            return jsonify(user)
-
-    return jsonify({
-        "error": "User not found"
-    }), 404
-
-# ---------------- CREATE POST ----------------
-
-@app.route("/create-post", methods=["POST"])
-def create_post():
-
-    data = request.json
-
-    new_post = {
-        "id": len(posts) + 1,
-        "userId": data.get("userId"),
-        "type": data.get("type", "text"),
-        "media": data.get("media", ""),
-        "content": data.get("content"),
-        "likes": 0,
-        "comments": [],
-        "timestamp": "now"
-    }
-
-    posts.insert(0, new_post)
-
-    return jsonify({
-        "message": "Post created",
-        "post": new_post
-    })
-
-# ---------------- LIKE ----------------
-
-@app.route("/like/<int:post_id>", methods=["POST"])
-def like(post_id):
-
-    for post in posts:
-
-        if post["id"] == post_id:
-
-            post["likes"] += 1
-
-            return jsonify({
-                "message": "Post liked",
-                "likes": post["likes"]
-            })
-
-    return jsonify({
-        "error": "Post not found"
-    }), 404
-
-# ---------------- COMMENT ----------------
-
-@app.route("/comment/<int:post_id>", methods=["POST"])
-def comment(post_id):
-
-    data = request.json
-
-    for post in posts:
-
-        if post["id"] == post_id:
-
-            new_comment = {
-                "user": data.get("user"),
-                "text": data.get("text")
-            }
-
-            post["comments"].append(new_comment)
-
-            return jsonify({
-                "message": "Comment added",
-                "comments": post["comments"]
-            })
-
-    return jsonify({
-        "error": "Post not found"
-    }), 404
-
-# ---------------- NOTIFICATIONS ----------------
-
-@app.route("/notifications")
-def get_notifications():
-    return jsonify(notifications)
-
-# ---------------- SEARCH ----------------
-
-@app.route("/search/<query>")
-def search(query):
-
-    result = []
-
-    for user in users:
-
-        if query.lower() in user["username"].lower():
-            result.append(user)
-
-    return jsonify(result)
-
-
+# ---------------- HTML ----------------
 
 HTML_PAGE = """
 <!DOCTYPE html>
@@ -1142,11 +927,104 @@ HTML_PAGE = """
 
     </script>
 </body>
-</html> 
-
-
+</html>
 """
 
+# ---------------- DATABASE ----------------
+
+users = [
+    {
+        "id": 1,
+        "username": "neon_wolf",
+        "password": "1234"
+    }
+]
+
+posts = [
+    {
+        "id": 1,
+        "userId": 1,
+        "type": "image",
+        "media": "https://picsum.photos/600",
+        "content": "Welcome to Nebula 🚀",
+        "likes": 15
+    }
+]
+
+# ---------------- HOME ----------------
+
+@app.route("/")
+def home():
+    return HTML_PAGE
+
+# ---------------- LOGIN ----------------
+
+@app.route("/login", methods=["POST"])
+def login():
+
+    data = request.json
+
+    username = data.get("username")
+    password = data.get("password")
+
+    for user in users:
+
+        if user["username"] == username and user["password"] == password:
+
+            return jsonify({
+                "message": "Login success"
+            })
+
+    return jsonify({
+        "error": "Invalid login"
+    }), 401
+
+# ---------------- FEED ----------------
+
+@app.route("/feed")
+def feed():
+    return jsonify(posts)
+
+# ---------------- CREATE POST ----------------
+
+@app.route("/create-post", methods=["POST"])
+def create_post():
+
+    data = request.json
+
+    new_post = {
+        "id": len(posts) + 1,
+        "userId": data.get("userId"),
+        "type": data.get("type"),
+        "media": data.get("media"),
+        "content": data.get("content"),
+        "likes": 0
+    }
+
+    posts.insert(0, new_post)
+
+    return jsonify({
+        "message": "Post created"
+    })
+
+# ---------------- LIKE ----------------
+
+@app.route("/like/<int:post_id>", methods=["POST"])
+def like(post_id):
+
+    for post in posts:
+
+        if post["id"] == post_id:
+
+            post["likes"] += 1
+
+            return jsonify({
+                "message": "liked"
+            })
+
+    return jsonify({
+        "error": "post not found"
+    })
 
 # ---------------- START ----------------
 
